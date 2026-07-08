@@ -1,4 +1,4 @@
-tasks = []
+import json
 
 def add_task():
     new_task = input("Введите задачу: ")
@@ -45,7 +45,46 @@ def menu_list():
     print("4. Удалить задачу")
     print("5. Поиск задачи")
     print("6. Выход")
+
+def save_list():
+
+    op = int(input("В каком формате сохранить 1.TXT 2.JSON: "))
+    match op:
+        case 1:
+            with open('src/save/list.txt', 'w', encoding='utf-8') as file:
+                for item in tasks:
+                    file.write(f"{item}\n")
+        case 2:
+            with open('src/save/list.json', 'w', encoding='utf-8') as file:
+                json.dump(tasks, file, ensure_ascii=False, indent = 4)
+        case _:
+            print("Некоректный ввод! Попробуйте еще раз")
+            save_list()
     
+    print("Список сохранён!")
+
+def open_list():
+    op = int(input("Какой формат файла запустить 1.TXT 2.JSON: "))
+    match op:
+        case 1:
+            try:
+                with open('src/save/list.txt', 'r', encoding='utf-8') as file:
+                    return [line.rstrip() for line in file]
+            except FileNotFoundError:
+                return []
+        case 2:
+            try:
+                with open('src/save/list.json', 'r', encoding='utf-8') as file:
+                    return json.load(file)
+            except FileNotFoundError:
+                return []
+        case _:
+            print("Некоректный ввод! Попробуйте еще раз")
+            open_list()
+
+    
+
+tasks = open_list()
 menu_list()
 
 while True:
@@ -57,12 +96,15 @@ while True:
             menu_list()
         case 1:
             add_task()
+            save_list()
         case 2:
             show_tasks()
         case 3:
             rename_task()
+            save_list()
         case 4:
             pop_task()
+            save_list()
         case 5:
             search_task()
         case 6:
